@@ -1,0 +1,37 @@
+{
+
+	"name":"problem1",
+
+	"variables" :
+		[
+			{
+				"name" : "X1",
+				"domain" : ["r", "b"]
+			},
+
+			{
+				"name" : "X2",
+				"domain" : ["r", "b"]
+			},
+
+			{
+				"name" : "X3",
+				"domain" : ["r", "b"]
+			}
+		],
+
+	"constraints" :
+		[
+			{
+				"scope" : ["X1", "X2"],
+				"relation" : [["r", "b"], ["b", "r"]]
+			},
+
+			{
+				"scope" : ["X1", "X3"],
+				"relation" : [["r", "b"], ["b", "r"]]
+			}
+		],
+
+	"ordering" : ["X1", "X2", "X3"]
+}
