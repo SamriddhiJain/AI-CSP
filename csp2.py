@@ -19,10 +19,8 @@ class csp():
 		    	self.constraints[(a,b)] = c["relation"]
 
 		    self.order = data["ordering"]
-		    gui.gui(self.domains, self.constraints)
-		    # print self.domain
-		    # print self.constraints
-		    # print self.order
+		    self.assign = {}
+		    self.gui = gui.gui(self.domain, self.constraints, self.order)
 
 	# two variables with given values are consistent
 	def consistent(self, x1, v1, x2, v2):
@@ -79,6 +77,7 @@ class csp():
 						if(not (j==k)):
 							valR, dom = self.revise(j,k,index,val,var,dom,assignment)
 							removedValue = valR
+			self.gui.update(dom,self.assign,var[index], val)
 			
 			for j in range(index+1, len(var)):
 				if(not len(dom[var[j]])): # inconsistent
@@ -88,6 +87,7 @@ class csp():
 			if(flag):
 				temp[var[index]] = copy.deepcopy(dom[var[index]])
 				dom = copy.deepcopy(temp)
+				self.gui.update(dom,self.assign,var[index], val)
 			else:
 				return val, dom
 
@@ -104,6 +104,7 @@ class csp():
 				for k in range(index+1,len(var)):
 					if(not (j==k)):
 						valR, dom = self.revise(j,k,index,val,var,dom,assignment)
+			self.gui.update(dom,self.assign,var[index], val)
 			
 			for j in range(index+1, len(var)):
 				if(not len(dom[var[j]])): # inconsistent
@@ -113,6 +114,7 @@ class csp():
 			if(flag):
 				temp[var[index]] = copy.deepcopy(dom[var[index]])
 				dom = copy.deepcopy(temp)
+				self.gui.update(dom,self.assign,var[index], val)
 			else:
 				return val, dom
 
@@ -128,6 +130,8 @@ class csp():
 			for j in range(index+1, len(var)):
 				for k in range(j+1,len(var)):
 					valR, dom = self.revise(j,k,index,val,var,dom,assignment)
+
+			self.gui.update(dom,self.assign,var[index], val)
 			
 			for j in range(index+1, len(var)):
 				if(not len(dom[var[j]])): # inconsistent
@@ -137,6 +141,7 @@ class csp():
 			if(flag):
 				temp[var[index]] = copy.deepcopy(dom[var[index]])
 				dom = copy.deepcopy(temp)
+				self.gui.update(dom,self.assign,var[index], val)
 			else:
 				return val, dom
 
@@ -147,27 +152,28 @@ class csp():
 		var = self.order
 		domains = []
 
-		assign = {}
 		i = 0
 		while(i>=0 and i<len(var)):
 			domains.append(copy.deepcopy(dom))
-			a, dom1 = self.selectValuePartialAC(i, var, dom, assign)
-
+			a, dom1 = self.selectValueFullAC(i, var, dom, self.assign)
 			if(not a):
 				# print "Backtrack at "+var[i]
 				i = i-1
 				dom = domains.pop()
 				dom = domains.pop()
 				dom[var[i]] = dom1[var[i]]
+				self.assign.pop(var[i])
 			else:
-				assign[var[i]] = a
+				self.assign[var[i]] = a
 				dom = copy.deepcopy(dom1)
 				i = i+1
+
+			self.gui.update(dom,self.assign)
 
 		if i<0:
 			return None
 		else:
-			return assign
+			return self.assign
 
 
 pb = csp('t1.json')

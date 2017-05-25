@@ -1,6 +1,7 @@
 '''Implementation of the Generalized Lookahead Search algorithms'''
 import json
 import copy
+import gui
 
 class csp():
 	def __init__(self, filename):
@@ -18,6 +19,9 @@ class csp():
 		    	self.constraints[(a,b)] = c["relation"]
 
 		    self.order = data["ordering"]
+		    self.assign = {}
+		    self.pruned = {}
+		    self.gui = gui.gui(self.domain, self.constraints, self.order)
 
 	def consistent(self, x1, v1, x2, v2):
 		if((x1,x2) in self.constraints.keys()):
@@ -40,12 +44,15 @@ class csp():
 				for b in dom[var[k]]:
 					if(not self.consistent(var[index], val, var[k], b)):
 						dom[var[k]].remove(b)
+				self.gui.update(dom,self.assign,var[index], val)
 
 				if(not len(dom[var[k]])): # inconsistent
 					temp[var[index]] = copy.deepcopy(dom[var[index]])
 					dom = copy.deepcopy(temp)
 					flag = 1
 					break
+
+			self.gui.update(dom,self.assign, var[index], val)
 			
 			if(not flag):
 				return val, dom
@@ -57,31 +64,27 @@ class csp():
 		var = self.order
 		domains = []
 
-		assign = {}
 		i = 0
 		while(i>=0 and i<len(var)):
 			domains.append(copy.deepcopy(dom))
-			# print var[i]
-			# print dom
-			a, dom1 = self.selectValueFC(i, var, dom, assign)
-			# print a
-			# print dom1
-			# print
+			a, dom1 = self.selectValueFC(i, var, dom, self.assign)
 			if(not a):
 				# print "Backtrack at "+var[i]
 				i = i-1
 				dom = domains.pop()
 				dom = domains.pop()
 				dom[var[i]] = dom1[var[i]]
+				self.assign.pop(var[i])
 			else:
-				assign[var[i]] = a
+				self.assign[var[i]] = a
 				dom = copy.deepcopy(dom1)
 				i = i+1
+			self.gui.update(dom,self.assign)
 
 		if i<0:
 			return None
 		else:
-			return assign
+			return self.assign
 
 
 pb = csp('t1.json')
