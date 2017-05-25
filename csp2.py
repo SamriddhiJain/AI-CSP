@@ -1,6 +1,7 @@
 '''Implementation of the Generalized Lookahead Search algorithms'''
 import json
 import copy
+import gui
 
 class csp():
 	def __init__(self, filename):
@@ -18,7 +19,7 @@ class csp():
 		    	self.constraints[(a,b)] = c["relation"]
 
 		    self.order = data["ordering"]
-
+		    gui.gui(self.domains, self.constraints)
 		    # print self.domain
 		    # print self.constraints
 		    # print self.order
