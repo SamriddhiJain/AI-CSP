@@ -6,10 +6,12 @@ ap.add_argument("-i", "--input", required=True,
 	help="path to the input json file")
 ap.add_argument("-n", "--algorithm_number", required=True,
 	help="Select Value algo to be used")
+ap.add_argument("-e", "--edges", default=0,
+	help="pass 1 to make edges else 0")
 args = vars(ap.parse_args())
 
 num = int(args["algorithm_number"])
-pb = csp.csp(args["input"])
+pb = csp.csp(args["input"], args["edges"])
 if(num==1):
 	print pb.genaralisedLookAhead(pb.selectValueFC)
 elif(num==2):

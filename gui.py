@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 # plt.gca().invert_xaxis()
 
 class gui():
-	def __init__(self, domains, relations, order):                                                                                   
+	def __init__(self, domains, relations, order, edge_check):                                                                                   
 		self.graph = nx.MultiGraph()
 		self.domains = domains
 		self.relations = relations
 		self.order = order
+		self.edge_check = edge_check
 
 		xO = 0
 		yO = 0
@@ -95,4 +96,14 @@ class gui():
 			currNode = []
 			currNode.append(currVar+": "+currVal)
 			nx.draw_networkx(self.graph, pos, nodelist=currNode, node_color='w', with_labels=True)
+
+		# add edges to the assigned list
+		if(self.edge_check):
+			for var1 in assignment.keys():
+				for var2 in assignment.keys():
+					if((var1,var2) in self.relations.keys()):
+						self.graph.add_edge(var1+": "+assignment[var1],var2+": "+assignment[var2])
+					elif((var2,var1) in self.relations.keys()):
+						self.graph.add_edge(var2+": "+assignment[var2],var1+": "+assignment[var1])
+		
 		plt.show()

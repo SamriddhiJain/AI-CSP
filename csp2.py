@@ -4,7 +4,7 @@ import copy
 import gui
 
 class csp():
-	def __init__(self, filename):
+	def __init__(self, filename, check):
 		with open(filename) as data_file:    
 		    data = json.load(data_file)
 
@@ -20,7 +20,7 @@ class csp():
 
 		    self.order = data["ordering"]
 		    self.assign = {}
-		    self.gui = gui.gui(self.domain, self.constraints, self.order)
+		    self.gui = gui.gui(self.domain, self.constraints, self.order, check)
 
 	# two variables with given values are consistent
 	def consistent(self, x1, v1, x2, v2):
@@ -163,10 +163,9 @@ class csp():
 				if(not len(dom[var[k]])): # inconsistent
 					temp[var[index]] = copy.deepcopy(dom[var[index]])
 					dom = copy.deepcopy(temp)
+					self.gui.update(dom,self.assign, var[index], val)
 					flag = 1
 					break
-
-			self.gui.update(dom,self.assign, var[index], val)
 			
 			if(not flag):
 				return val, dom
