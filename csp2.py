@@ -147,7 +147,33 @@ class csp():
 
 		return None, dom
 
-	def genaralisedLookAhead(self):
+	def selectValueFC(self, index, var, dom, assignment):
+		while len(dom[var[index]]):
+			flag = 0
+			temp = copy.deepcopy(dom)
+			val = dom[var[index]][0]
+			dom[var[index]].remove(val)
+
+			for k in range(index+1, len(var)):
+				for b in dom[var[k]]:
+					if(not self.consistent(var[index], val, var[k], b)):
+						dom[var[k]].remove(b)
+				self.gui.update(dom,self.assign,var[index], val)
+
+				if(not len(dom[var[k]])): # inconsistent
+					temp[var[index]] = copy.deepcopy(dom[var[index]])
+					dom = copy.deepcopy(temp)
+					flag = 1
+					break
+
+			self.gui.update(dom,self.assign, var[index], val)
+			
+			if(not flag):
+				return val, dom
+
+		return None, dom
+
+	def genaralisedLookAhead(self, func):
 		dom = copy.deepcopy(self.domain)
 		var = self.order
 		domains = []
@@ -155,7 +181,7 @@ class csp():
 		i = 0
 		while(i>=0 and i<len(var)):
 			domains.append(copy.deepcopy(dom))
-			a, dom1 = self.selectValueFullAC(i, var, dom, self.assign)
+			a, dom1 = func(i, var, dom, self.assign)
 			if(not a):
 				# print "Backtrack at "+var[i]
 				i = i-1
@@ -174,7 +200,3 @@ class csp():
 			return None
 		else:
 			return self.assign
-
-
-pb = csp('t1.json')
-print pb.genaralisedLookAhead()
